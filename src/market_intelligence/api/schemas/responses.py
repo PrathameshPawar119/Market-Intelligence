@@ -17,3 +17,16 @@ class IntelligenceResponse(BaseModel):
     research_findings: str
     analysis: str
     report: str
+    ticker: str | None = None
+    headlines: list[dict[str, Any]] = []
+    sentiment: dict[str, Any] = {}
+    signal: dict[str, Any] = {}
+    technicals: dict[str, Any] = {}
+    tool_calls: list[str] = []
+    errors: list[str] = []
+
+
+class BatchSignalResult(BaseModel):
+    ticker: str
+    result: IntelligenceResponse | None = None
+    error: str | None = None

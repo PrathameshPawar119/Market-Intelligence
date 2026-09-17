@@ -3,14 +3,14 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Any
 
-from market_intelligence.config.settings import get_settings
+from market_intelligence.config import settings as settings_module
 
 
 @lru_cache
 def get_chat_model() -> Any:
     """Return the shared configured chat model instance for the active provider."""
 
-    settings = get_settings()
+    settings = settings_module.get_settings()
     provider = settings.model_provider.lower()
 
     if provider == "openai":

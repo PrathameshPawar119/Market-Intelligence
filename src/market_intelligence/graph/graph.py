@@ -16,14 +16,18 @@ def build_graph(
     analysis_agent: AnalysisAgent | None = None,
     report_agent: ReportAgent | None = None,
 ):
-    """Build the linear workflow, keeping agent dependencies injectable for tests."""
+    """Build FetchNews → AnalyseSentiment → GenerateSignal.
+
+    Dependency injection keeps each node independently testable without
+    touching an external market provider or an LLM.
+    """
 
     workflow = StateGraph(MarketIntelligenceState)
-    workflow.add_node("research", research_node(research_agent or ResearchAgent()))
-    workflow.add_node("analysis", analysis_node(analysis_agent or AnalysisAgent()))
-    workflow.add_node("report", report_node(report_agent or ReportAgent()))
-    workflow.add_edge(START, "research")
-    workflow.add_edge("research", "analysis")
-    workflow.add_edge("analysis", "report")
-    workflow.add_edge("report", END)
+    workflow.add_node("fetch_news", research_node(research_agent or ResearchAgent()))
+    workflow.add_node("analyse_sentiment", analysis_node(analysis_agent or AnalysisAgent()))
+    workflow.add_node("generate_signal", report_node(report_agent or ReportAgent()))
+    workflow.add_edge(START, "fetch_news")
+    workflow.add_edge("fetch_news", "analyse_sentiment")
+    workflow.add_edge("analyse_sentiment", "generate_signal")
+    workflow.add_edge("generate_signal", END)
     return workflow.compile()
